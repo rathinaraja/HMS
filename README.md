@@ -1,13 +1,58 @@
-# HMS Optimizer Study: Comprehensive Evaluation Framework
-
-A modular, scalable framework for evaluating Harmonic Mean-based Scalar (HMS) enhancement across multiple optimizers, datasets, and neural network architectures.
-
+# 📋 HMS Overview
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 📊 Experiment Configuration
+The **HMS (Harmonic Mean-based Scalar)** method is a novel approach to enhance classical SGD-based optimizers for regression tasks. It accelerates convergence and improves model performance by applying harmonic mean-based weight adjustments after each training epoch.
+
+## Key Innovation
+
+HMS calculates the harmonic mean (HM) of each parameter's current and previous epoch values, extracts the fractional component, scales it, and adds it to the current parameter value. This approach:
+
+- **Accelerates convergence** compared to classical optimizers
+- **Stabilizes training** by being insensitive to outliers
+- **Improves regression performance** without violating optimizer properties
+- **Works as an add-on** to any SGD-based optimizer
+
+### HMS Optimizer Implementation
+
+The `HMSOptimizer` class wraps around standard PyTorch optimizers:
+
+```python
+class HMSOptimizer:
+    def __init__(self, model, optimizer, r=1.0, t=100, decay_rate=0.9):
+        # r: HMS scaling factor
+        # t: Epoch interval for r decay
+        # decay_rate: Rate at which r decays
+        
+    def on_train_begin(self):
+        # Initialize weight tracking
+        
+    def on_epoch_end(self):
+        # Apply HMS after each epoch
+        
+    def apply_hms(self, v1, v2, r):
+        # Core HMS calculation logic
+```
+
+### HMS Algorithm
+
+For each parameter at epoch end:
+
+1. **Zero Handling**: If either previous or current value is zero, keep current value
+2. **v1 > v2 case**: 
+   - Calculate harmonic mean: `hm = 2*|v1|*|v2|/(|v1|+|v2|)`
+   - Compute adjustment: `hms = |hm - min(|v1|,|v2|)| * r`
+   - Update: `v2 = v2 - hms`
+3. **v1 < v2 case**:
+   - Same harmonic mean calculation
+   - Update: `v2 = v2 + hms`
+4. **v1 == v2 case**: No change
+5. **Decay r every t epochs**: `r = r * decay_rate`
+
+## 📊 Experiment Configuration: Comprehensive Evaluation Framework
+A modular, scalable framework for evaluating Harmonic Mean-based Scalar (HMS) enhancement across multiple optimizers, datasets, and neural network architectures.
 
 ### 1. Optimizers (10)
 
