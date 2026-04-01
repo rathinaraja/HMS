@@ -1,0 +1,83 @@
+Optimizers used (13)
+--------------------
+SGD, Momentum, NAG, AdaGrad, RMSprop, AdaDelta, Adam, AdaMax, NAdam, AdamW, RAdam, ASGD, Rprop
+
+Models used (3)
+----------------
+Linear regression, neural network, time-series model (GRU, LSTM, etc.)
+
+Datasets used (15)
+------------------
+Boston housing dataset, california housing dataset, insurance_dataset, power plant dataset, naval propulsion dataset, protein structure dataset, ct_slices dataset, bike sharing dataset, fuel_efficiency_dataset, wine quality dataset, appliances energy dataset, diabetes dataset, concrete dataset, energy dataset, kin8nm dataset
+
+Code refence:  Boston_dataset folder for Boston housing dataset (it is already completed)
+-------------
+Folder structure: Boston_dataset
+Boston_dataset
+    |-Deep_learning_results (created after running Deep_learning.py)
+    |-Linear_regression_results (created after running Linear_regression.py)
+    |-Deep_learning.ipynb
+    |-Linear_regression.ipynb
+    |-Deep_learning.py
+    |-Linear_regression.py
+
+How to run the program? for example, for deep learning model
+# Single optimizer (GPU)
+python Deep_learning.py --optimizer Adam --gpu 0 --epochs 1000 --runs 10
+# All optimizers (GPU)
+python Deep_learning.py --optimizer All --gpu 0 --epochs 1000 --runs 10
+
+# Single optimizer (CPU)
+python Deep_learning.py --optimizer SGD --epochs 1000 --runs 10
+# All optimizers (CPU)
+python Deep_learning.py --optimizer All --epochs 1000 --runs 10
+
+Deep_learning_results (folder)
+    |-AdaDelta
+        |-AdaDelta_report.txt
+        |-AdaDelta_summary.csv
+        |-run_1_epoch_losses.csv
+        |-run_1_generic_iteration_losses.csv
+        |-run_1_hms_iteration_losses.csv
+        |-run_2_epoch_losses.csv
+        |-run_3_epoch_losses.csv
+        |-run_4_epoch_losses.csv
+        |-run_5_epoch_losses.csv
+        |-run_6_epoch_losses.csv
+        |-run_7_epoch_losses.csv
+        |-run_8_epoch_losses.csv
+        |-run_9_epoch_losses.csv
+        |-run_10_epoch_losses.csv
+    |-AdaGrad
+    |-Adam
+    |-AdaMax
+    |-AdamW
+    |-ASGD
+    |-Momentum
+    |-NAdam
+    |-NAG
+    |-RAdam
+    |-RMSprop
+    |-Rprop
+    |-SGD
+    |-global_summary.csv
+
+global_summary.csv - contains aggregated results, including test loss, and is primarily used for final result presentation and comparison.
+****_report.txt (per optimizer) - provides a detailed, optimizer-specific summary of training behavior and performance.
+run_*_epoch_losses.csv - stores per-epoch loss values and can be used to plot training and validation loss curves.
+Linear_regression.ipynb and Deep_learning.ipynb - serve as step-by-step reference notebooks illustrating the full workflow. These notebooks should be used as templates when adapting the pipeline to new datasets.
+
+What needs to be done?
+-----------------------
+For each new dataset, create a dedicated folder and copy the relevant .ipynb and .py files from the Boston_dataset directory. The following steps must be completed for each dataset: In .ipynb file
++ Load the dataset.
++ Preprocess the data.
++ Split the data into training and testing sets (80:20).
++ Define the model - for deep learning models, adjust the number of layers and neurons as required.
+
+After validating the changes in the .ipynb files, port the modified code blocks into the corresponding .py scripts.
+Run the Python script with appropriate arguments to perform 10 independent runs with 1000 epochs each. This will generate a results directory containing all output files listed above.
+
+Note: 
++ The provided data_loaders.py and dataset_configs.py files already include preprocessing logic and dataset descriptions. Please use these as references to ensure consistency across datasets.
++ California housing dataset, Fuel_efficiency_dataset, Wine_quality_dataset, Insurance_dataset, and Time_series_dataset folders contain old implementation. You may use these for a reference. 

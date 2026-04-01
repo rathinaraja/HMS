@@ -1,0 +1,17 @@
+name: hms
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - torch
+      - numpy
+      - pandas
+      - scikit-learn
+      - requests
+      - scipy
+      - tqdm
+      - optuna
+      - matplotlib
+      - seaborn
