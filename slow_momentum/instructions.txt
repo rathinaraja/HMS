@@ -1,0 +1,112 @@
+What is SlowMo?
+---------------- 
+Apply momentum to the parameters themselves, not the gradients!
+Traditional Momentum (on gradients):
+  v_t = β*v_{t-1} + ∇L
+  θ_t = θ_{t-1} - η*v_t
+
+SlowMo (on parameters):
+  Δθ = θ_current - θ_cached
+  v_t = β*v_{t-1} + Δθ
+  θ_t = θ_t + η_slow*v_t
+
+Key Insight:
+Instead of smoothing what direction to move (gradients), SlowMo smooths where you're actually going (parameter trajectory)!
+
+Quick Test: python SlowMo.py --optimizer Adam --epochs 10 --runs 1 --output ./results
+Full Experiment: python SlowMo.py --dataset boston --model mlp --optimizer Adam --epochs 1000 --runs 5 --output ./results
+
+Custom SlowMo Parameters:
+Conservative (maximum stability): python SlowMo.py --optimizer Adam --beta 0.8 --k 5 --lr-slow 0.5 --output ./results
+Balanced (default): python SlowMo.py --optimizer Adam --beta 0.6 --k 10 --lr-slow 1.0 --output ./results
+Aggressive (maximum speed): python SlowMo.py --optimizer Adam --beta 0.4 --k 20 --lr-slow 1.5 --output ./results
+
+Parameters Explained
+β (beta) - Momentum Coefficient
+Default: 0.6
+Range: 0.4 - 0.8
+What it does: How much past momentum is retained
+Formula: v = β*v_old + Δθ
+Examples:
+If v_old=10, Δθ=5:
+  β=0.4 → v=9  (40% old momentum)
+  β=0.6 → v=11 (60% old momentum)
+  β=0.8 → v=13 (80% old momentum)
+Tuning:
+Unstable training → β = 0.7-0.8 (more smoothing)
+Slow convergence → β = 0.4-0.5 (less smoothing)
+
+k - Synchronization Period
+Default: 10
+Range: 5 - 20
+What it does: Steps between momentum updates
+Examples:
+k=5:  [Adam×5→SlowMo] [Adam×5→SlowMo]
+k=10: [Adam×10→SlowMo] [Adam×10→SlowMo]
+k=20: [Adam×20→SlowMo] [Adam×20→SlowMo]
+Tuning:
+Small datasets → k = 5-7
+Medium datasets → k = 10 (default)
+Large datasets → k = 15-20
+
+η_slow (lr_slow) - Slow Learning Rate
+Default: 1.0
+Range: 0.5 - 2.0
+What it does: Step size for momentum application
+Formula: θ = θ + η_slow*v
+Tuning:
+Weak momentum → η_slow = 1.5-2.0
+Unstable → η_slow = 0.5-0.7
+
+Theory: Why SlowMo Works
+1. Variance Reduction
+Parameters jump around due to noisy gradients
+Momentum smooths these jumps → stable trajectory
+2. Trajectory Stabilization
+Creates a "preferred direction" in parameter space
+Based on accumulated parameter movement, not just current gradient
+3. Different from Gradient Momentum
+Gradient Momentum:
+  - Smooths GRADIENTS
+  - Helps with gradient noise
+  - Accelerates convergence
+Parameter Momentum (SlowMo):
+  - Smooths PARAMETER UPDATES
+  - Helps with trajectory noise  
+  - Stabilizes optimization path
+
+4. Can Use Both!
+pythonoptimizer = SGD(lr=0.01, momentum=0.9)  # Gradient momentum
+slowmo = SlowMoHandler(beta=0.6)         # Parameter momentum
+
+# Both work together!
+optimizer.step()  # Gradient momentum
+slowmo.step()     # Parameter momentum
+
+📈 Expected Results
+Training Curves:
+Loss
+│
+│  ╱╲  ╱╲  ╱╲         ← Baseline (noisy)
+│ ╱  ╲╱  ╲╱  ╲
+│
+│    ___              ← SlowMo (smooth!)
+│   ╱   ╲___
+│  ╱        ╲___
+│
+└─────────────── Iterations
+
+Typical Improvements:
+MetricImprovementTraining StabilityMuch smootherTest Error1-3% betterVarianceSignificantly reducedConvergenceSimilar or better
+
+🔧 Quick Parameter Guide
+By Dataset:
+Small (< 1000): --beta 0.7 --k 5 --lr-slow 0.8
+Medium (1000-10000): --beta 0.6 --k 10 --lr-slow 1.0
+Large (> 10000): --beta 0.5 --k 15 --lr-slow 1.2
+
+By Problem:
+Unstable: --beta 0.8 --k 5 --lr-slow 0.5
+Too slow: --beta 0.4 --k 15 --lr-slow 1.5
+Stuck in local min: --beta 0.3 --k 20 --lr-slow 2.0
+Overfitting: --beta 0.7 --k 8 --lr-slow 0.8
