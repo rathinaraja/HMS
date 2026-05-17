@@ -1,0 +1,68 @@
+Quick Test: python GAP.py --optimizer Adam --epochs 10 --runs 1 --output ./results
+Full Experiment: python GAP.py --dataset boston --model mlp --optimizer Adam --epochs 1000 --runs 5 --output ./results
+
+Custom GAP Parameters
+---------------------
+Conservative (clean data): bashpython GAP.py --optimizer Adam --epsilon 0.2 --alpha 0.7 --lambda 0.05
+
+Aggressive (noisy data): python GAP.py --optimizer Adam --epsilon 1.5 --alpha 0.95 --lambda 0.3
+
+Default (balanced): python GAP.py --optimizer Adam --epsilon 0.5 --alpha 0.9 --lambda 0.1
+
+Parameters Explained
+--------------------
+epsilon (ε) - Perturbation Magnitude
+-----------
+Default: 0.5
+Range: 0.1 - 2.0
+
+Higher = more perturbation
+Lower = closer to baseline
+Increase for noisy data
+
+alpha (α) - Geometric Weight
+----------
+Default: 0.9
+Range: 0.5 - 0.99
+
+Controls how much geometry affects perturbation
+Higher = stronger geometric influence
+0.95-0.99 for very unstable training
+0.5-0.7 for stable training
+
+lambda (λ) - Regularization
+----------
+Default: 0.1
+Range: 0.01 - 0.5
+
+Controls noise injection
+Higher = more regularization (fights overfitting)
+Lower = less noise (faster convergence)
+
+Use GAP When:
+---------------
+Training is unstable
+Data is noisy
+Gradients oscillate
+Differential privacy needed
+Small batch training
+Want robust solutions
+
+
+Dataset Size
+------------
+Small (< 1000): --epsilon 0.3 --alpha 0.7 --lambda 0.05
+
+Medium (1000-10000): --epsilon 0.5 --alpha 0.9 --lambda 0.1
+
+Large (> 10000): --epsilon 0.7 --alpha 0.95 --lambda 0.15
+
+Training Issues
+---------------
+Unstable/Oscillating: --epsilon 0.8 --alpha 0.95 --lambda 0.15
+
+Overfitting: --epsilon 0.5 --alpha 0.9 --lambda 0.3
+
+Underfitting: --epsilon 0.3 --alpha 0.8 --lambda 0.05
+
+Slow Convergence: --epsilon 0.4 --alpha 0.85 --lambda 0.08

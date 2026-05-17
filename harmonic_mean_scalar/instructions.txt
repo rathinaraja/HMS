@@ -1,0 +1,45 @@
+What is HMS?
+------------ 
+HMS uses the harmonic mean to smooth weight updates, making the optimization resistant to outlier changes while asymmetrically handling weight increases vs decreases.
+The Algorithm:
+For each weight w:
+1. Compute harmonic mean: HM = 2*|w_prev|*|w_curr| / (|w_prev| + |w_curr|)
+2. Compute HMS scalar: HMS = |HM - min(|w_prev|, |w_curr|)| * r
+3. If decreasing: w = w - HMS  (slow down decrease)
+   If increasing: w = w + HMS  (accelerate increase)
+4. Decay r every t iterations
+
+Usage
+Quick Test: python HMS.py --optimizer Adam --epochs 10 --runs 1 --output ./results
+Full Experiment: python HMS.py --dataset boston --model mlp --optimizer Adam --epochs 1000 --runs 5 --output ./results
+
+Custom HMS Parameters:
+Strong smoothing: python HMS.py --optimizer Adam --r 1.5 --t 500 --decay-rate 0.95
+Weak smoothing: python HMS.py --optimizer Adam --r 0.5 --t 2000 --decay-rate 0.85
+Default (balanced): python HMS.py --optimizer Adam --r 1.0 --t 1000 --decay-rate 0.9
+
+Parameters
+------------
+r - Smoothing Strength
+Default: 1.0
+Range: 0.5 - 2.0
+Higher = stronger smoothing
+
+t - Decay Interval
+Default: 1000
+Range: 500 - 2000
+Iterations between r decay
+
+decay_rate - R Decay Rate
+Default: 0.9
+Range: 0.85 - 0.95
+
+Key Features
+------------
+1. Harmonic Mean
+Robust to outliers (unlike arithmetic mean)
+2. Asymmetric Updates
+Slows down decreases (resists weight decay)
+Accelerates increases (encourages growth)
+3. Adaptive Decay
+r decreases over time → less smoothing as training progresses

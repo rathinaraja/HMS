@@ -1,0 +1,24 @@
+Default HBF Parameters
+----------------------
+pythonHBF_BETA = 0.9        # Momentum coefficient (0.8-0.95)
+HBF_GAMMA = 0.1             # Friction coefficient (0.05-0.2)
+HBF_DECAY_INTERVAL = 1000   # Decay gamma every 1000 iterations
+HBF_GAMMA_DECAY = 0.95      # Gamma decay rate
+
+HBF Algorithm
+-------------
+v_t = β * v_{t-1} + (1 - β) * g_t - γ * sign(v_{t-1}) * |g_t|
+w_{t+1} = w_t - α * v_t
+
+Physics Intuition
+-----------------
+β * v_{t-1}: Momentum (heavy-ball)
+(1-β) * g_t: Gradient contribution
+γ * sign(v_{t-1}) * |g_t|: Friction term (opposes velocity direction)
+
+Quick Start
+-----------------
+python HBF.py --optimizer Adam --epochs 10 --runs 1
+python HBF.py --optimizer All --epochs 1000 --runs 5
+python HBF.py --dataset yahoo --model lstm --ticker AAPL --lookback 10 --epochs 1000 --runs 5 --optimizer Adam
+python HBF.py --optimizer Adam --epochs 1000 --runs 5  --beta 0.85 --gamma 0.15

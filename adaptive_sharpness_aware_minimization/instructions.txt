@@ -1,0 +1,40 @@
+Quick Start: python ASAM.py --optimizer Adam --epochs 10 --runs 1
+Full Experiment: python ASAM.py --dataset boston --model mlp --optimizer Adam  --epochs 1000 --runs 5
+
+ASAM Parameters
+--------------- 
+self.ASAM_RHO = 0.5      # Perturbation radius (0.05-2.0)
+self.ASAM_ETA = 0.01     # Smoothing parameter
+self.ASAM_BETA = 0.1     # Mixing coefficient (0-1)
+
+What They Do 
+------------- 
+rho (ρ): Perturbation radius
+Higher = more aggressive sharpness minimization
+Lower = closer to standard training
+Default: 0.5, Range: 0.05-2.0
+
+eta (η): Smoothing parameter
+Numerical stability
+Rarely needs tuning
+Default: 0.01
+
+beta (β): Mixing coefficient
+0 = no ASAM effect
+1 = full perturbation
+Default: 0.1
+
+Custom ASAM Parameters
+----------------------
+Conservative: python ASAM.py --optimizer Adam --rho 0.2 --beta 0.05
+Aggressive: python ASAM.py --optimizer Adam --rho 1.0 --beta 0.2
+Default: python _ASAM.py --optimizer Adam --rho 0.5 --beta 0.1
+All Optimizers: python ASAM.py --dataset boston --model mlp --optimizer All
+
+Parameter Tuning Guide
+----------------------
+Small datasets (< 1000 samples): --rho 0.3 --beta 0.05
+Medium datasets (1000-10000): --rho 0.5 --beta 0.1  # Default
+Large datasets (> 10000): --rho 0.7 --beta 0.15
+Training unstable: --rho 0.2 --beta 0.05 --eta 0.1
+Poor generalization: --rho 1.0 --beta 0.2
